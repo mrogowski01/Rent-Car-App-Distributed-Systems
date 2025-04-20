@@ -1,0 +1,119 @@
+version: '3.8'
+
+services:
+  car-service:
+    build:
+      context: ./car-service
+      dockerfile: ./Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - SERVER_PORT=8081
+    labels:
+      - car-service
+    networks:
+      - spring-cloud-network
+    container_name: car-service
+    privileged: true
+    depends_on:
+      data-db:
+        condition: service_healthy
+
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: ./Dockerfile
+    ports:
+      - "8082:8082"
+    environment:
+      - SERVER_PORT=8082
+    labels:
+      - user-service
+    networks:
+      - spring-cloud-network
+    container_name: user-service
+    privileged: true
+    depends_on:
+      user-db:
+        condition: service_healthy
+
+  notification-service:
+    build:
+      context: ./notification_service
+      dockerfile: ./Dockerfile
+    ports:
+      - "8083:8083"
+    environment:
+      - SERVER_PORT=8083
+    labels:
+      - notification-service
+    networks:
+      - spring-cloud-network
+    container_name: notification-service
+    privileged: true
+
+  user-db:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: users_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - user-db-data:/var/lib/postgresql/data
+      - ./db-init-scripts/user-db-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d users_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - spring-cloud-network
+
+  data-db:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: data_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - data-db-data:/var/lib/postgresql/data
+      - ./db-init-scripts/data-db-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d data_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - spring-cloud-network
+
+      
+  db:
+    image: postgres:15
+    container_name: test_postgres
+    environment:
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: testpassword
+      POSTGRES_DB: testdb
+    ports:
+      - "5435:5432"
+    networks:
+      - spring-cloud-network
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+
+volumes:
+  user-db-data:
+    driver: local
+  data-db-data:
+    driver: local
+  postgres-data:
+
+networks:
+  spring-cloud-network:
+    driver: bridge
+

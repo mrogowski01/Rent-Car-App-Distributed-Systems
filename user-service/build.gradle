@@ -1,0 +1,67 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.4.0'
+	id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'pl.edu.agh'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.postgresql:postgresql:42.6.1'
+	implementation 'org.springframework:spring-web'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	implementation "org.springframework.boot:spring-boot-starter-security"
+//	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+	implementation 'io.jsonwebtoken:jjwt:0.12.3'
+	implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
+//	implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
+//	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+	implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.34'
+	runtimeOnly 'org.postgresql:postgresql'
+	testImplementation 'org.testcontainers:junit-jupiter'
+	testImplementation 'org.testcontainers:postgresql'
+	testImplementation 'com.github.tomakehurst:wiremock-jre8:2.35.0'
+	implementation 'org.apache.commons:commons-compress:1.26.0'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation 'org.springframework.security:spring-security-oauth2-jose'
+	implementation 'org.springframework.security:spring-security-oauth2-resource-server'
+	testImplementation 'org.mockito:mockito-core'
+	testImplementation 'com.jayway.jsonpath:json-path:2.9.0'
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation 'org.springframework.security:spring-security-oauth2-jose'
+	implementation 'org.springframework.security:spring-security-oauth2-resource-server'
+	implementation 'org.eclipse.jetty.http2:http2-hpack:9.4.54.v20240208'
+	implementation 'org.eclipse.jetty.http2:http2-common:9.4.54.v20240208'
+	implementation 'org.eclipse.jetty.http2:http2-server:9.4.54.v20240208'
+
+}
+
+configurations.configureEach {
+	resolutionStrategy {
+		force 'org.eclipse.jetty.http2:http2-hpack:9.4.54.v20240208'
+		force 'org.eclipse.jetty.http2:http2-common:9.4.54.v20240208'
+		force 'org.eclipse.jetty.http2:http2-server:9.4.54.v20240208'
+	}
+}
+
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
